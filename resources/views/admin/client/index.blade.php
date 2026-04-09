@@ -1,6 +1,6 @@
 @extends('layouts.landing')
 
-@section('title', 'Data Client')
+@section('title', 'Data Client - Admin')
 
 @section('content')
 <div class="container mt-4">
@@ -37,20 +37,20 @@
                     <tbody>
                         @forelse($clients as $key => $client)
                         <tr>
-                            <td>{{ $clients->firstItem() + $key }}</td>
-                            <td>{{ $client->nama_perusahaan }}</td>
-                            <td>{{ $client->nama_kontak }}</td>
-                            <td>{{ $client->email }}</td>
-                            <td>{{ $client->no_telepon }}</td>
-                            <td>{{ $client->bidang_usaha }}</td>
-                            <td>{{ $client->total_proyek }}</td>
+                            <td>{{ $clients->firstItem() + $key }} </td>
+                            <td>{{ $client->nama_perusahaan }} </td>
+                            <td>{{ $client->nama_kontak }} </td>
+                            <td>{{ $client->email }} </td>
+                            <td>{{ $client->no_telepon }} </td>
+                            <td>{{ $client->bidang_usaha }} </td>
+                            <td>{{ $client->total_proyek }} </td>
                             <td>
                                 @if($client->status == 'aktif')
                                     <span class="badge bg-success">Aktif</span>
                                 @else
                                     <span class="badge bg-danger">Nonaktif</span>
                                 @endif
-                            </td>
+                             </td>
                             <td>
                                 <a href="{{ route('client.show', $client->id) }}" class="btn btn-info btn-sm">
                                     <i class="fas fa-eye"></i>
@@ -65,7 +65,7 @@
                                         <i class="fas fa-trash"></i>
                                     </button>
                                 </form>
-                            </td>
+                             </td>
                         </tr>
                         @empty
                         <tr>
