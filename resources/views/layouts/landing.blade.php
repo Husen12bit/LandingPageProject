@@ -61,7 +61,7 @@
     <nav class="navbar navbar-expand-lg">
         <div class="container">
             <a class="navbar-brand" href="{{ route('home') }}">
-                <i class="fas fa-store"></i> Bantuin
+                <i class="fas fa-store"></i> SkillBantuin
             </a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>

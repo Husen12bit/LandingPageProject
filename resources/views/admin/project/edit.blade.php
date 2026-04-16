@@ -1,4 +1,4 @@
-@extends('layouts.landing')
+@extends('layouts.admin')
 
 @section('title', 'Edit Proyek')
 
