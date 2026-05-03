@@ -34,4 +34,14 @@ class Project extends Model
     {
         return $this->hasMany(Bid::class);
     }
+
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
+    }
+
+    public function acceptedOffer()
+    {
+        return $this->hasOne(Offer::class)->where('status', 'accepted');
+    }
 }

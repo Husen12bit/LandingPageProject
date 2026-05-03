@@ -23,4 +23,9 @@ class Freelancer extends Model
         'rating',
         'status'
     ];
+
+    public function offers()
+    {
+        return $this->hasMany(Offer::class);
+    }
 }
