@@ -9,6 +9,7 @@ use App\Http\Controllers\API\CategoryController;
 use App\Http\Controllers\API\BidController;
 use App\Http\Controllers\API\ChatController;
 use App\Http\Controllers\API\OfferController;
+use App\Http\Controllers\API\PaymentController;
 
 // Public routes (tanpa auth)
 Route::post('/register', [AuthController::class, 'register']);
@@ -53,4 +54,10 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/offers/{id}/accept', [OfferController::class, 'accept']);
     Route::put('/offers/{id}/reject', [OfferController::class, 'reject']);
     Route::get('/my-offers', [OfferController::class, 'myOffers']);
+
+    // Payment
+    Route::post('/projects/{id}/pay', [PaymentController::class, 'createTransaction']);
+    Route::get('/transactions/{orderId}/status', [PaymentController::class, 'status']);
 });
+
+Route::post('/midtrans/callback', [PaymentController::class, 'callback']);
