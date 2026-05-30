@@ -23,17 +23,14 @@ class Freelancer extends Model
         'rating',
         'status'
     ];
-<<<<<<< Updated upstream
-=======
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
+/*
     public function offers()
     {
         return $this->hasMany(Offer::class);
-    }
->>>>>>> Stashed changes
+    }*/
 }
