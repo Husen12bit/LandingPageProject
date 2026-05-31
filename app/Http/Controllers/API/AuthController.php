@@ -38,8 +38,31 @@ class AuthController extends Controller
             'is_active' => true,
         ]);
 
-        // Create related data based on role (tanpa Client::create dulu)
-        // Ini hanya placeholder, nanti diisi manual via tinker atau admin panel
+        // Auto create client/freelancer berdasarkan role
+        if ($request->role === 'client') {
+            \App\Models\Client::create([
+                'nama_perusahaan' => $request->name,
+                'nama_kontak'     => $request->name,
+                'email'           => $request->email,
+                'no_telepon'      => $request->phone ?? '',
+                'alamat'          => '',
+                'bidang_usaha'    => '',
+                'total_proyek'    => 0,
+                'status'          => 'aktif',
+            ]);
+        } elseif ($request->role === 'freelancer') {
+            \App\Models\Freelancer::create([
+                'nama_lengkap'    => $request->name,
+                'email'           => $request->email,
+                'no_telepon'      => $request->phone ?? '',
+                'keahlian'        => '',
+                'deskripsi'       => '',
+                'harga_per_hari'  => 0,
+                'pengalaman_tahun'=> 0,
+                'status'          => 'verifikasi',
+                'rating'          => 0,
+            ]);
+        }
 
         $token = $user->createToken('auth_token')->plainTextToken;
 
