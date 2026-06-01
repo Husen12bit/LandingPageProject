@@ -1,174 +1,78 @@
 @extends('layouts.landing')
 
-@section('title', 'About - Platform Freelance')
-
 @section('content')
-<style>
-    .page-header {
-        background-color: #f8f9fa;
-        padding: 60px 0;
-        text-align: center;
-    }
-
-    .about-content {
-        padding: 60px 0;
-    }
-
-    .developer-section {
-        padding: 40px 0;
-        background-color: #f8f9fa;
-        border-radius: 10px;
-        margin-top: 30px;
-    }
-
-    .developer-card {
-        text-align: center;
-        padding: 30px;
-        background: white;
-        border-radius: 10px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-        margin-bottom: 30px;
-        transition: transform 0.3s;
-    }
-
-    .developer-card:hover {
-        transform: translateY(-5px);
-    }
-
-    .developer-icon {
-        width: 100px;
-        height: 100px;
-        background: linear-gradient(135deg, #1dbf73 0%, #0e8f56 100%);
-        border-radius: 50%;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        margin: 0 auto 20px;
-    }
-
-    .developer-icon i {
-        font-size: 50px;
-        color: white;
-    }
-
-    .tech-stack {
-        padding: 40px 0;
-    }
-
-    .tech-item {
-        display: inline-block;
-        background: #f0f0f0;
-        padding: 10px 20px;
-        margin: 5px;
-        border-radius: 20px;
-        font-size: 14px;
-    }
-
-    .tech-item i {
-        color: #1dbf73;
-        margin-right: 8px;
-    }
-</style>
-
-<div class="page-header">
-    <div class="container">
-        <h1>Tentang Kami</h1>
-        <p class="lead">Mengenal lebih dekat platform freelance kami</p>
+<div class="container mx-auto px-6">
+    <div class="text-center mb-16" data-aos="fade-up">
+        <h1 class="text-5xl font-extrabold bg-gradient-to-r from-purple-400 via-orange-400 to-cyan-400 bg-clip-text text-transparent">Engineering the Future of Work</h1>
+        <p class="text-gray-300 mt-4 max-w-2xl mx-auto">Built with rock-solid architecture & military-grade security.</p>
     </div>
-</div>
 
-<div class="about-content">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-6">
-                <h3>Siapa Kami?</h3>
-                <p>Bantuin adalah platform freelance yang menghubungkan klien dengan freelancer berkualitas dari berbagai bidang. Kami hadir untuk memudahkan Anda menemukan talenta terbaik untuk kebutuhan project Anda.</p>
-                <p>Kami berkomitmen untuk memberikan layanan terbaik dan menciptakan ekosistem freelance yang aman dan terpercaya.</p>
+    <!-- Visi Misi -->
+    <div class="grid md:grid-cols-2 gap-8 mb-20" data-aos="fade-right">
+        <div class="glass-card-premium p-8 rounded-2xl">
+            <i class="fas fa-rocket text-4xl text-purple-400"></i>
+            <h3 class="text-2xl font-bold mt-3">Visi</h3>
+            <p class="text-gray-300 mt-2">Menjadi infrastruktur freelance terpercaya di Asia Tenggara dengan ekosistem terbuka.</p>
+        </div>
+        <div class="glass-card-premium p-8 rounded-2xl">
+            <i class="fas fa-bullseye text-4xl text-orange-400"></i>
+            <h3 class="text-2xl font-bold mt-3">Misi</h3>
+            <p class="text-gray-300 mt-2">Memastikan setiap transaksi aman, setiap talenta terverifikasi, dan setiap proyek sukses.</p>
+        </div>
+    </div>
+
+    <!-- Design Philosophy + 10 Heuristics -->
+    <div class="glass-card-premium p-8 rounded-2xl mb-20" data-aos="flip-left">
+        <i class="fas fa-paintbrush-fine text-4xl text-cyan-400"></i>
+        <h3 class="text-2xl font-bold mt-2">Design Philosophy — 10 Heuristik Nielsen</h3>
+        <p class="mt-4 text-gray-200">SkillBantuin dirancang iteratif dengan kepatuhan pada prinsip Jakob Nielsen: <strong>visibility of system status, match between system and real world, user control & freedom, consistency, error prevention, recognition rather than recall, flexibility, aesthetic & minimalist design, help users recognize/diagnose errors, help & documentation</strong>. Setiap elemen UI diuji secara berkala untuk memastikan pengalaman lintas platform seamless.</p>
+    </div>
+
+    <!-- System Architecture Visualization (premium blocks) -->
+    <div class="mb-20" data-aos="zoom-in">
+        <h2 class="text-3xl font-bold text-center mb-8">⚡ System Architecture</h2>
+        <div class="grid md:grid-cols-3 gap-6">
+            <div class="glass-card-premium p-5 text-center border-t-4 border-purple-500">
+                <i class="fas fa-database text-3xl text-purple-400"></i>
+                <p class="font-mono text-sm mt-2">Normalized Relational DB (3NF)</p>
             </div>
-            <div class="col-md-6">
-                <h3>Visi & Misi</h3>
-                <p><strong>Visi:</strong> Menjadi platform freelance terkemuka di Indonesia yang memberdayakan talenta lokal.</p>
-                <p><strong>Misi:</strong></p>
-                <ul>
-                    <li>Menyediakan akses mudah bagi klien dan freelancer</li>
-                    <li>Menjamin keamanan transaksi dan kualitas kerja</li>
-                    <li>Mendukung pertumbuhan ekonomi kreatif</li>
-                </ul>
+            <div class="glass-card-premium p-5 text-center border-t-4 border-orange-500">
+                <i class="fas fa-cloud-upload-alt text-3xl text-orange-400"></i>
+                <p class="font-mono text-sm mt-2">AWS GuardDuty + Detective</p>
+            </div>
+            <div class="glass-card-premium p-5 text-center border-t-4 border-cyan-500">
+                <i class="fas fa-lock text-3xl text-cyan-400"></i>
+                <p class="font-mono text-sm mt-2">End-to-End Encryption</p>
             </div>
         </div>
+    </div>
 
-        <div class="developer-section">
-            <h3 class="text-center mb-5">Tim Developer</h3>
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="developer-card">
-                        <div class="developer-icon">
-                            <i class="fas fa-hand-holding-heart"></i>
-                        </div>
-                        <h4>Support</h4>
-                        <h5 class="text-success">Brayen Prasetyo</h5>
-                        <p class="text-muted">Bertugas meningkatkan kesejahteraan developer.</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="developer-card">
-                        <div class="developer-icon">
-                            <i class="fas fa-code"></i>
-                        </div>
-                        <h4>Web Developer</h4>
-                        <h5 class="text-success">Muhammad Abdullah Husaini</h5>
-                        <p class="text-muted">Bertugas membangun web.</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="developer-card">
-                        <div class="developer-icon">
-                            <i class="fas fa-mobile-alt"></i>
-                        </div>
-                        <h4>Mobile Developer</h4>
-                        <h5 class="text-success">Fito Rifqi Dwi Fatoni</h5>
-                        <p class="text-muted">Bertugas membangun aplikasi mobile.</p>
-                    </div>
-                </div>
-                <div class="col-md-3">
-                    <div class="developer-card">
-                        <div class="developer-icon">
-                            <i class="fas fa-palette"></i>
-                        </div>
-                        <h4>UI/UX Designer</h4>
-                        <h5 class="text-success">Pius Hari Purba</h5>
-                        <p class="text-muted">Merancang tampilan antarmuka yang menarik.</p>
-                    </div>
-                </div>
-            </div>
+    <!-- Tech Stack Glow Pills -->
+    <div class="text-center mb-20" data-aos="fade-up">
+        <h3 class="text-2xl font-semibold mb-6">Tech Stack Enterprise</h3>
+        <div class="flex flex-wrap justify-center gap-3">
+            @foreach(['Laravel 11', 'PHP 8.3', 'OracleDB', 'Flutter 3.22', 'Dart 3.4', 'AWS (EC2, RDS, S3)'] as $tech)
+            <span class="px-5 py-2 rounded-full glass-premium text-sm font-mono border border-purple-500/40 shadow-glow">{{ $tech }}</span>
+            @endforeach
         </div>
+    </div>
 
-        <!-- Technology Stack -->
-        <div class="tech-stack text-center">
-            <h3 class="mb-4">Teknologi yang Digunakan</h3>
-            <div>
-                <span class="tech-item"><i class="fab fa-laravel"></i> Laravel 11</span>
-                <span class="tech-item"><i class="fab fa-php"></i> PHP 8</span>
-                <span class="tech-item"><i class="fas fa-database"></i> MySQL</span>
-                <span class="tech-item"><i class="fab fa-aws"></i> AWS</span>
-                <span class="tech-item"><i class="fab fa-bootstrap"></i> Bootstrap 5</span>
-                <span class="tech-item"><i class="fab fa-flutter"></i> Flutter</span>
-                <span class="tech-item"><i class="fab fa-dart"></i> Dart</span>
-                <span class="tech-item"><i class="fab fa-js"></i> JavaScript</span>
-                <span class="tech-item"><i class="fab fa-git-alt"></i> Git</span>
-                <span class="tech-item"><i class="fas fa-cloud"></i> Cloud (AWS)</span>
-            </div>
+    <!-- Developer Team -->
+    <h2 class="text-3xl font-bold text-center mb-8">Core Team</h2>
+    <div class="grid md:grid-cols-4 gap-6 mb-20">
+        @php $team = [
+            ['name'=>'Brayen Prasetyo', 'role'=>'Support', 'icon'=>'🧠'],
+            ['name'=>'Muhammad Abdullah Husaini', 'role'=>'Web Lead', 'icon'=>'🔒'],
+            ['name'=>'Pius Hari Purba', 'role'=>'Principal Designer', 'icon'=>'🎨'],
+            ['name'=>'Fito Rifqi Dwi Fatoni', 'role'=>'Mobile Lead', 'icon'=>'📱']
+        ]; @endphp
+        @foreach($team as $member)
+        <div class="glass-card-premium p-6 text-center rounded-2xl hover-lift">
+            <div class="text-5xl mb-2">{{ $member['icon'] }}</div>
+            <h4 class="text-xl font-bold">{{ $member['name'] }}</h4>
+            <p class="text-purple-300 text-sm">{{ $member['role'] }}</p>
         </div>
-
-        <!-- Project Info -->
-        <div class="row mt-5">
-            <div class="col-md-12">
-                <div class="alert alert-success">
-                    <h5 class="text-success"><i class="fas fa-info-circle"></i> Informasi Project</h5>
-                    <p class="mb-0">Project ini merupakan tugas mata kuliah Pemrograman Web Lanjut. Dikembangkan menggunakan Laravel 11 dan Bootstrap 5.</p>
-                </div>
-            </div>
-        </div>
+        @endforeach
     </div>
 </div>
 @endsection

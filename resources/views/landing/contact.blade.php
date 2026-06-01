@@ -1,98 +1,86 @@
 @extends('layouts.landing')
 
-@section('title', 'Contact - Platform Freelance')
-
 @section('content')
-<style>
-    .page-header {
-        background-color: #f8f9fa;
-        padding: 60px 0;
-        text-align: center;
-    }
-
-    .contact-section {
-        padding: 60px 0;
-    }
-
-    .contact-info {
-        text-align: center;
-        padding: 30px;
-        border: 1px solid #eee;
-        border-radius: 10px;
-        margin-bottom: 30px;
-    }
-
-    .contact-info i {
-        font-size: 40px;
-        color: #1dbf73;
-        margin-bottom: 15px;
-    }
-
-    .contact-form {
-        background-color: #f8f9fa;
-        padding: 40px;
-        border-radius: 10px;
-    }
-
-    .form-control {
-        margin-bottom: 20px;
-        padding: 12px;
-    }
-</style>
-
-<div class="page-header">
-    <div class="container">
-        <h1>Hubungi Kami</h1>
-        <p class="lead">Ada pertanyaan? Kami siap membantu Anda</p>
+<div class="container mx-auto px-6">
+    <div class="text-center max-w-2xl mx-auto mb-16" data-aos="fade-up">
+        <h1 class="text-5xl font-extrabold bg-gradient-to-r from-purple-400 to-orange-400 bg-clip-text text-transparent">Help Center</h1>
+        <p class="text-gray-300 text-lg mt-3">We're here to help, 24 hours a day.</p>
     </div>
-</div>
 
-<div class="contact-section">
-    <div class="container">
-        <div class="row">
-            <div class="col-md-4">
-                <div class="contact-info">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <h5>Alamat</h5>
-                    <p>Gedhang, Indonesia</p>
-                </div>
+    <!-- Support Stats & Contact Cards -->
+    <div class="grid md:grid-cols-3 gap-6 mb-16" data-aos="fade-up">
+        <div class="glass-card-premium p-6 text-center">
+            <i class="fas fa-clock text-3xl text-purple-400"></i>
+            <p class="text-2xl font-bold mt-2">Avg. Response</p>
+            <p class="text-gray-300">< 24 minutes</p>
+        </div>
+        <div class="glass-card-premium p-6 text-center">
+            <i class="fas fa-smile text-3xl text-orange-400"></i>
+            <p class="text-2xl font-bold mt-2">98% Satisfaction</p>
+            <p class="text-gray-300">from 5k+ tickets</p>
+        </div>
+        <div class="glass-card-premium p-6 text-center">
+            <i class="fas fa-globe text-3xl text-cyan-400"></i>
+            <p class="text-2xl font-bold mt-2">24/7 Support</p>
+            <p class="text-gray-300">Live chat & email</p>
+        </div>
+    </div>
+
+    <!-- Contact Info + Dynamic Form -->
+    <div class="grid md:grid-cols-2 gap-10 items-start">
+        <div class="space-y-6" data-aos="fade-right">
+            <div class="glass-card-premium p-6 rounded-2xl flex gap-4 items-center">
+                <i class="fas fa-map-pin text-2xl text-purple-400"></i>
+                <div><h4 class="font-bold">Office</h4><p class="text-gray-300">Gedhang, Indonesia — Digital Hub</p></div>
             </div>
-            <div class="col-md-4">
-                <div class="contact-info">
-                    <i class="fas fa-phone"></i>
-                    <h5>Telepon</h5>
-                    <p>+62 812 7482 0784</p>
-                </div>
+            <div class="glass-card-premium p-6 rounded-2xl flex gap-4 items-center">
+                <i class="fas fa-phone-alt text-2xl text-orange-400"></i>
+                <div><h4 class="font-bold">Phone</h4><p class="text-gray-300">+62 812 7482 0784</p></div>
             </div>
-            <div class="col-md-4">
-                <div class="contact-info">
-                    <i class="fas fa-envelope"></i>
-                    <h5>Email</h5>
-                    <p>info@Bantuin.com</p>
-                </div>
+            <div class="glass-card-premium p-6 rounded-2xl flex gap-4 items-center">
+                <i class="fas fa-envelope text-2xl text-cyan-400"></i>
+                <div><h4 class="font-bold">Email</h4><p class="text-gray-300">info@SkillBantuin.com</p></div>
             </div>
         </div>
 
-        <div class="row mt-5">
-            <div class="col-md-8 mx-auto">
-                <div class="contact-form">
-                    <h3 class="text-center mb-4">Kirim Pesan</h3>
-                    <form>
-                        <div class="row">
-                            <div class="col-md-6">
-                                <input type="text" class="form-control" placeholder="Nama Lengkap" required>
-                            </div>
-                            <div class="col-md-6">
-                                <input type="email" class="form-control" placeholder="Email" required>
-                            </div>
-                        </div>
-                        <input type="text" class="form-control" placeholder="Subjek">
-                        <textarea class="form-control" rows="5" placeholder="Pesan" required></textarea>
-                        <button type="submit" class="btn btn-primary w-100">Kirim Pesan</button>
-                    </form>
+        <div class="glass-card-premium p-8 rounded-2xl" data-aos="fade-left">
+            <h3 class="text-2xl font-bold mb-6">Kirim Pesan</h3>
+            <form id="supportForm" class="space-y-5">
+                <div class="relative">
+                    <input type="text" id="name" required class="peer w-full bg-transparent border-b-2 border-gray-500 focus:border-purple-500 outline-none py-2 text-white transition-all" placeholder=" ">
+                    <label class="absolute left-0 -top-3.5 text-gray-400 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-400">Nama Lengkap</label>
                 </div>
-            </div>
+                <div class="relative">
+                    <input type="email" id="email" required class="peer w-full bg-transparent border-b-2 border-gray-500 focus:border-purple-500 outline-none py-2 text-white" placeholder=" ">
+                    <label class="absolute left-0 -top-3.5 text-gray-400 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-400">Email</label>
+                </div>
+                <div>
+                    <select class="w-full bg-slate-800/60 border border-gray-600 rounded-lg p-3 text-white focus:ring-2 focus:ring-purple-500">
+                        <option>Topik Kendala</option>
+                        <option>Akun & Login</option>
+                        <option>Pembayaran</option>
+                        <option>Proyek</option>
+                        <option>Lainnya</option>
+                    </select>
+                </div>
+                <div class="relative">
+                    <textarea rows="4" required class="peer w-full bg-transparent border-b-2 border-gray-500 focus:border-purple-500 outline-none py-2 text-white resize-none" placeholder=" "></textarea>
+                    <label class="absolute left-0 -top-3.5 text-gray-400 text-sm transition-all peer-placeholder-shown:text-base peer-placeholder-shown:top-2 peer-focus:-top-3.5 peer-focus:text-purple-400">Pesan detail</label>
+                </div>
+                <button type="submit" class="w-full magnetic-btn py-3 rounded-xl bg-gradient-to-r from-purple-600 to-orange-500 text-white font-bold transition-all hover:shadow-lg">Kirim Pesan <i class="fas fa-paper-plane ml-2"></i></button>
+                <p class="text-xs text-gray-400 text-center mt-3"><i class="fas fa-bolt"></i> Tim kami merespon < 24 jam (biasanya 2 jam)</p>
+            </form>
         </div>
     </div>
 </div>
+
+@push('js')
+<script>
+    document.getElementById('supportForm')?.addEventListener('submit', function(e){
+        e.preventDefault();
+        alert('Pesan terkirim! Support akan menghubungi Anda segera.');
+        this.reset();
+    });
+</script>
+@endpush
 @endsection
