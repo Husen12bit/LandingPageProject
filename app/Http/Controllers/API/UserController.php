@@ -12,15 +12,12 @@ class UserController extends Controller
     public function profile(Request $request)
     {
         $user = $request->user();
+        $user->load(['client', 'freelancer']);
 
-        // Load relasi client atau freelancer
-        if ($user->role == 'client') {
-            $user->client = \App\Models\Client::where('email', $user->email)->first();
-        } elseif ($user->role == 'freelancer') {
-            $user->freelancer = \App\Models\Freelancer::where('email', $user->email)->first();
-        }
-
-        return response()->json($user);
+        return response()->json([
+            'success' => true,
+            'data' => $this->formatUserProfile($user),
+        ]);
     }
 
     // Update user profile
@@ -65,10 +62,61 @@ class UserController extends Controller
             }
         }
 
+        $user->load(['client', 'freelancer']);
+
         return response()->json([
             'success' => true,
             'message' => 'Profil berhasil diupdate',
-            'user' => $user
+            'data' => $this->formatUserProfile($user),
         ]);
+    }
+
+    private function formatUserProfile($user): array
+    {
+        $profile = [
+            'id' => $user->id,
+            'name' => $user->name,
+            'username' => $user->username,
+            'email' => $user->email,
+            'role' => $user->role,
+            'phone' => $user->phone,
+            'avatar' => $user->avatar,
+            'bio' => $user->bio,
+            'skill' => $user->skill,
+            'company' => $user->company,
+            'created_at' => $user->created_at->toDateTimeString(),
+        ];
+
+        if ($user->role === 'client' && $user->client) {
+            $profile['client'] = [
+                'id' => $user->client->id,
+                'nama_perusahaan' => $user->client->nama_perusahaan,
+                'nama_kontak' => $user->client->nama_kontak,
+                'email' => $user->client->email,
+                'no_telepon' => $user->client->no_telepon,
+                'alamat' => $user->client->alamat,
+                'bidang_usaha' => $user->client->bidang_usaha,
+                'total_proyek' => $user->client->total_proyek,
+                'status' => $user->client->status,
+            ];
+        }
+
+        if ($user->role === 'freelancer' && $user->freelancer) {
+            $profile['freelancer'] = [
+                'id' => $user->freelancer->id,
+                'nama_lengkap' => $user->freelancer->nama_lengkap,
+                'email' => $user->freelancer->email,
+                'no_telepon' => $user->freelancer->no_telepon,
+                'keahlian' => $user->freelancer->keahlian,
+                'portfolio' => $user->freelancer->portfolio,
+                'deskripsi' => $user->freelancer->deskripsi,
+                'harga_per_hari' => $user->freelancer->harga_per_hari,
+                'pengalaman_tahun' => $user->freelancer->pengalaman_tahun,
+                'rating' => $user->freelancer->rating,
+                'status' => $user->freelancer->status,
+            ];
+        }
+
+        return $profile;
     }
 }

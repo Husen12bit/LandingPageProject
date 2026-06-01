@@ -18,7 +18,8 @@ class AuthController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
+            'username' => 'required|string|max:50|unique:users,username',
+            'email' => 'required|string|email|max:255|unique:users,email',
             'password' => 'required|string|min:6',
             'role' => 'required|in:client,freelancer',
             'phone' => 'nullable|string|max:15',
@@ -31,6 +32,7 @@ class AuthController extends Controller
         // Create User
         $user = User::create([
             'name' => $request->name,
+            'username' => $request->username,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
@@ -44,9 +46,9 @@ class AuthController extends Controller
                 'nama_perusahaan' => $request->name,
                 'nama_kontak'     => $request->name,
                 'email'           => $request->email,
-                'no_telepon'      => $request->phone ?? '',
-                'alamat'          => '',
-                'bidang_usaha'    => '',
+                'no_telepon'      => $request->phone ?? '-',
+                'alamat'          => $request->input('alamat', '-'),
+                'bidang_usaha'    => $request->input('bidang_usaha', '-'),
                 'total_proyek'    => 0,
                 'status'          => 'aktif',
             ]);
@@ -54,9 +56,9 @@ class AuthController extends Controller
             \App\Models\Freelancer::create([
                 'nama_lengkap'    => $request->name,
                 'email'           => $request->email,
-                'no_telepon'      => $request->phone ?? '',
-                'keahlian'        => '',
-                'deskripsi'       => '',
+                'no_telepon'      => $request->phone ?? '-',
+                'keahlian'        => $request->input('keahlian', 'Umum'),
+                'deskripsi'       => $request->input('deskripsi', 'Deskripsi belum tersedia'),
                 'harga_per_hari'  => 0,
                 'pengalaman_tahun'=> 0,
                 'status'          => 'verifikasi',
@@ -72,6 +74,7 @@ class AuthController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
+                'username' => $user->username,
                 'email' => $user->email,
                 'role' => $user->role,
                 'phone' => $user->phone,
@@ -84,7 +87,8 @@ class AuthController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'email' => 'required|email',
+            'identity' => 'sometimes|string',
+            'email' => 'sometimes|string|email',
             'password' => 'required',
         ]);
 
@@ -92,11 +96,20 @@ class AuthController extends Controller
             return response()->json(['errors' => $validator->errors()], 422);
         }
 
-        $user = User::where('email', $request->email)->first();
+        $identity = $request->input('identity', $request->input('email'));
+        if (!$identity) {
+            return response()->json([
+                'message' => 'Email atau username diperlukan untuk login.'
+            ], 422);
+        }
+
+        $user = User::where('email', $identity)
+            ->orWhere('username', $identity)
+            ->first();
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             return response()->json([
-                'message' => 'Email atau password salah!'
+                'message' => 'Email/Username atau password salah!'
             ], 401);
         }
 
@@ -114,6 +127,7 @@ class AuthController extends Controller
             'user' => [
                 'id' => $user->id,
                 'name' => $user->name,
+                'username' => $user->username,
                 'email' => $user->email,
                 'role' => $user->role,
                 'phone' => $user->phone,

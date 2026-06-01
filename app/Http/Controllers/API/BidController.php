@@ -9,13 +9,11 @@ use Illuminate\Http\Request;
 
 class BidController extends Controller
 {
-    /*
     // Get my bids (for freelancer)
     public function myBids(Request $request)
     {
         $user = $request->user();
 
-        // Get freelancer from user email
         $freelancer = Freelancer::where('email', $user->email)->first();
 
         if (!$freelancer) {
@@ -28,12 +26,24 @@ class BidController extends Controller
         $bids = Bid::where('freelancer_id', $freelancer->id)
             ->with('project')
             ->latest()
-            ->paginate(10);
+            ->get()
+            ->map(function ($bid) {
+                return [
+                    'id' => $bid->id,
+                    'project_id' => $bid->project->id,
+                    'project_title' => $bid->project->judul,
+                    'project_status' => $bid->project->status,
+                    'harga_penawaran' => (int) $bid->harga_penawaran,
+                    'pesan_penawaran' => $bid->pesan_penawaran,
+                    'estimasi_hari' => $bid->estimasi_hari,
+                    'status' => $bid->status,
+                    'created_at' => $bid->created_at->diffForHumans(),
+                ];
+            });
 
         return response()->json([
             'success' => true,
             'data' => $bids
         ]);
     }
-        */
 }
