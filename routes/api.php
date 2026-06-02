@@ -41,6 +41,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Apply to project
     Route::post('/projects/{id}/apply', [ProjectController::class, 'apply']);
+    Route::get('/projects/{id}/attachment-file', [ProjectController::class, 'downloadAttachment']);
     Route::post('/projects/{id}/submit-result', [ProjectController::class, 'submitResult']);
     Route::get('/projects/{id}/result-file', [ProjectController::class, 'downloadResult']);
     Route::post('/projects/{id}/review', [ProjectController::class, 'review']);

@@ -18,6 +18,8 @@ class Project extends Model
         'anggaran_max',
         'deadline',
         'status',
+        'attachment_file',
+        'attachment_name',
         'assigned_freelancer_id',
         'agreed_budget',
         'result_file',

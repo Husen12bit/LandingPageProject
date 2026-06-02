@@ -33,6 +33,10 @@ class ProjectController extends Controller
 
         $projects = $query->latest()->paginate(10);
 
+        $projects->getCollection()->transform(function ($project) {
+            return $this->withFileUrls($project);
+        });
+
         return response()->json($projects);
     }
 
@@ -45,7 +49,7 @@ class ProjectController extends Controller
             return response()->json(['message' => 'Proyek tidak ditemukan'], 404);
         }
 
-        return response()->json($this->withResultDownloadUrl($project));
+        return response()->json($this->withFileUrls($project));
     }
 
     // Store new project (by client)
@@ -58,6 +62,7 @@ class ProjectController extends Controller
             'anggaran_min' => 'required|numeric|min:0|max:99999999.99',
             'anggaran_max' => 'required|numeric|min:0|max:99999999.99|gt:anggaran_min',
             'deadline' => 'required|date',
+            'attachment_file' => 'nullable|file|max:20480',
         ]);
 
         if ($validator->fails()) {
@@ -84,9 +89,28 @@ class ProjectController extends Controller
             'status' => 'open'
         ]);
 
+        if ($request->hasFile('attachment_file')) {
+            $file = $request->file('attachment_file');
+            $safeName = Str::uuid() . '-' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+            $extension = $file->getClientOriginalExtension();
+            $fileName = $extension ? "{$safeName}.{$extension}" : $safeName;
+            $filePath = $file->storeAs("project-attachments/{$project->id}", $fileName);
+
+            $attachmentData = [];
+            if (Schema::hasColumn('projects', 'attachment_file')) {
+                $attachmentData['attachment_file'] = $filePath;
+            }
+            if (Schema::hasColumn('projects', 'attachment_name')) {
+                $attachmentData['attachment_name'] = $file->getClientOriginalName();
+            }
+            if (!empty($attachmentData)) {
+                $project->update($attachmentData);
+            }
+        }
+
         return response()->json([
             'message' => 'Proyek berhasil dibuat!',
-            'project' => $project
+            'project' => $this->withFileUrls($project->fresh(['client', 'kategori']))
         ], 201);
     }
 
@@ -108,7 +132,7 @@ class ProjectController extends Controller
             ->paginate(10);
 
         $projects->getCollection()->transform(function ($project) {
-            return $this->withResultDownloadUrl($project);
+            return $this->withFileUrls($project);
         });
 
         return response()->json([
@@ -261,10 +285,34 @@ class ProjectController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Hasil pekerjaan berhasil dikirim',
-            'data' => $this->withResultDownloadUrl(
+            'data' => $this->withFileUrls(
                 $project->fresh(['client', 'kategori', 'offers.freelancer'])
             ),
         ]);
+    }
+
+    public function downloadAttachment(Request $request, $projectId)
+    {
+        $project = Project::with(['client'])->find($projectId);
+
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Proyek tidak ditemukan'
+            ], 404);
+        }
+
+        if (!$project->attachment_file || !Storage::exists($project->attachment_file)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Lampiran belum tersedia'
+            ], 404);
+        }
+
+        return Storage::download(
+            $project->attachment_file,
+            $project->attachment_name ?: basename($project->attachment_file)
+        );
     }
 
     public function downloadResult(Request $request, $projectId)
@@ -407,8 +455,19 @@ class ProjectController extends Controller
             ->exists();
     }
 
-    private function withResultDownloadUrl(Project $project): Project
+    private function withFileUrls(Project $project): Project
     {
+        if ($project->attachment_file) {
+            $project->setAttribute(
+                'attachment_file_url',
+                url("/api/projects/{$project->id}/attachment-file")
+            );
+            $project->setAttribute(
+                'attachment_file_name',
+                $project->attachment_name ?: basename($project->attachment_file)
+            );
+        }
+
         if ($project->result_file) {
             $project->setAttribute(
                 'result_file_url',
