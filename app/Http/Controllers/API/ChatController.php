@@ -103,21 +103,23 @@ class ChatController extends Controller
     private function canAccessProjectChat($user, Project $project): bool
     {
         if ($user->role === 'client') {
-            $client = Client::where('email', $user->email)->first();
-            return $client && $project->client_id === $client->id;
+            return Client::where('id', $project->client_id)
+                ->where('email', $user->email)
+                ->exists();
         }
 
         if ($user->role === 'freelancer') {
-            $freelancer = Freelancer::where('email', $user->email)->first();
-            if (!$freelancer) {
-                return false;
-            }
-
             $hasOffer = Offer::where('project_id', $project->id)
-                ->where('freelancer_id', $freelancer->id)
+                ->whereHas('freelancer', function ($query) use ($user) {
+                    $query->where('email', $user->email);
+                })
                 ->exists();
 
-            return $hasOffer || $project->assigned_freelancer_id === $freelancer->id;
+            $isAssignedFreelancer = Freelancer::where('id', $project->assigned_freelancer_id)
+                ->where('email', $user->email)
+                ->exists();
+
+            return $hasOffer || $isAssignedFreelancer;
         }
 
         return false;

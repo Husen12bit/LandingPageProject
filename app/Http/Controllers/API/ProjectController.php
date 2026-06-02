@@ -9,6 +9,9 @@ use App\Models\Freelancer;
 use App\Models\Client;
 use App\Models\Offer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Support\Facades\Validator;
 
 class ProjectController extends Controller
@@ -42,7 +45,7 @@ class ProjectController extends Controller
             return response()->json(['message' => 'Proyek tidak ditemukan'], 404);
         }
 
-        return response()->json($project);
+        return response()->json($this->withResultDownloadUrl($project));
     }
 
     // Store new project (by client)
@@ -52,8 +55,8 @@ class ProjectController extends Controller
             'judul' => 'required|string|max:255',
             'deskripsi' => 'required|string',
             'kategori_id' => 'required|exists:kategoris,id',
-            'anggaran_min' => 'required|numeric|min:0',
-            'anggaran_max' => 'required|numeric|min:0|gt:anggaran_min',
+            'anggaran_min' => 'required|numeric|min:0|max:99999999.99',
+            'anggaran_max' => 'required|numeric|min:0|max:99999999.99|gt:anggaran_min',
             'deadline' => 'required|date',
         ]);
 
@@ -103,6 +106,10 @@ class ProjectController extends Controller
             }])
             ->latest()
             ->paginate(10);
+
+        $projects->getCollection()->transform(function ($project) {
+            return $this->withResultDownloadUrl($project);
+        });
 
         return response()->json([
             'success' => true,
@@ -187,6 +194,230 @@ class ProjectController extends Controller
                 'created_at' => $offer->created_at,
             ]
         ], 201);
+    }
+
+    public function submitResult(Request $request, $projectId)
+    {
+        $validator = Validator::make($request->all(), [
+            'result_file' => 'required|file|max:51200',
+            'result_link' => 'nullable|string|max:255',
+            'result_note' => 'required|string',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user = $request->user();
+        $freelancer = Freelancer::where('email', $user->email)->first();
+
+        if (!$freelancer) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda belum terdaftar sebagai freelancer'
+            ], 403);
+        }
+
+        $project = Project::find($projectId);
+
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Proyek tidak ditemukan'
+            ], 404);
+        }
+
+        $hasAcceptedOffer = Offer::where('project_id', $project->id)
+            ->where('freelancer_id', $freelancer->id)
+            ->where('status', 'accepted')
+            ->exists();
+
+        if (!$hasAcceptedOffer && $project->assigned_freelancer_id !== $freelancer->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses untuk mengirim hasil proyek ini'
+            ], 403);
+        }
+
+        $file = $request->file('result_file');
+        $safeName = Str::uuid() . '-' . Str::slug(pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME));
+        $extension = $file->getClientOriginalExtension();
+        $fileName = $extension ? "{$safeName}.{$extension}" : $safeName;
+        $filePath = $file->storeAs("project-results/{$project->id}", $fileName);
+
+        $resultData = [
+            'result_file' => $filePath,
+            'result_link' => $request->result_link,
+            'result_note' => $request->result_note,
+            'status' => 'completed',
+        ];
+
+        if (Schema::hasColumn('projects', 'result_submitted_at')) {
+            $resultData['result_submitted_at'] = now();
+        }
+
+        $project->update($resultData);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Hasil pekerjaan berhasil dikirim',
+            'data' => $this->withResultDownloadUrl(
+                $project->fresh(['client', 'kategori', 'offers.freelancer'])
+            ),
+        ]);
+    }
+
+    public function downloadResult(Request $request, $projectId)
+    {
+        $project = Project::with(['client', 'offers.freelancer'])->find($projectId);
+
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Proyek tidak ditemukan'
+            ], 404);
+        }
+
+        if (!$this->canAccessProjectResult($request, $project)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda tidak memiliki akses ke file hasil proyek ini'
+            ], 403);
+        }
+
+        if (!$project->result_file || !Storage::exists($project->result_file)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'File hasil belum tersedia'
+            ], 404);
+        }
+
+        return Storage::download($project->result_file, basename($project->result_file));
+    }
+
+    public function review(Request $request, $projectId)
+    {
+        $validator = Validator::make($request->all(), [
+            'rating' => 'required|integer|min:1|max:5',
+            'comment' => 'required|string|min:10',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        $user = $request->user();
+        $client = Client::where('email', $user->email)->first();
+
+        if (!$client) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Anda belum terdaftar sebagai client'
+            ], 403);
+        }
+
+        $project = Project::with('offers.freelancer')
+            ->where('id', $projectId)
+            ->where('client_id', $client->id)
+            ->first();
+
+        if (!$project) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Proyek tidak ditemukan'
+            ], 404);
+        }
+
+        if ($project->status !== 'completed') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Review hanya bisa dikirim setelah freelancer mengirim hasil'
+            ], 422);
+        }
+
+        $reviewData = [];
+
+        if (Schema::hasColumn('projects', 'review_rating')) {
+            $reviewData['review_rating'] = $request->rating;
+        }
+
+        if (Schema::hasColumn('projects', 'review_comment')) {
+            $reviewData['review_comment'] = $request->comment;
+        }
+
+        if (Schema::hasColumn('projects', 'reviewed_at')) {
+            $reviewData['reviewed_at'] = now();
+        }
+
+        if (!empty($reviewData)) {
+            $project->update($reviewData);
+        }
+
+        $acceptedOffer = $project->offers->firstWhere('status', 'accepted');
+        $freelancer = $acceptedOffer?->freelancer;
+
+        if (!$freelancer && $project->assigned_freelancer_id) {
+            $freelancer = Freelancer::find($project->assigned_freelancer_id);
+        }
+
+        if ($freelancer) {
+            $completedRatings = Project::query()
+                ->whereHas('offers', function ($query) use ($freelancer) {
+                    $query->where('freelancer_id', $freelancer->id)
+                        ->where('status', 'accepted');
+                });
+
+            if (Schema::hasColumn('projects', 'review_rating')) {
+                $completedRatings->whereNotNull('review_rating');
+                $averageRating = round((float) $completedRatings->avg('review_rating'), 2);
+                $freelancer->update(['rating' => $averageRating]);
+            } else {
+                $freelancer->update(['rating' => $request->rating]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Review berhasil dikirim',
+            'data' => $project->fresh(['client', 'kategori', 'offers.freelancer']),
+        ]);
+    }
+
+    private function canAccessProjectResult(Request $request, Project $project): bool
+    {
+        $user = $request->user();
+
+        $client = Client::where('email', $user->email)->first();
+        if ($client && (int) $project->client_id === (int) $client->id) {
+            return true;
+        }
+
+        $freelancer = Freelancer::where('email', $user->email)->first();
+        if (!$freelancer) {
+            return false;
+        }
+
+        if ($project->assigned_freelancer_id && (int) $project->assigned_freelancer_id === (int) $freelancer->id) {
+            return true;
+        }
+
+        return Offer::where('project_id', $project->id)
+            ->where('freelancer_id', $freelancer->id)
+            ->where('status', 'accepted')
+            ->exists();
+    }
+
+    private function withResultDownloadUrl(Project $project): Project
+    {
+        if ($project->result_file) {
+            $project->setAttribute(
+                'result_file_url',
+                url("/api/projects/{$project->id}/result-file")
+            );
+            $project->setAttribute('result_file_name', basename($project->result_file));
+        }
+
+        return $project;
     }
 
     // Terima penawaran freelancer (by client)

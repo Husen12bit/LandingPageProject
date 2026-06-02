@@ -178,16 +178,21 @@ class OfferController extends Controller
         }
 
         $offers = Offer::where('freelancer_id', $freelancer->id)
-            ->with('project')
+            ->with('project.client')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($offer) {
                 return [
                     'id' => $offer->id,
-                    'project_title' => $offer->project->judul,
+                    'project_id' => $offer->project_id,
+                    'freelancer_id' => $offer->freelancer_id,
+                    'project_title' => $offer->project?->judul,
+                    'project' => $offer->project,
                     'offered_budget' => (int) $offer->offered_budget,
                     'message' => $offer->message,
+                    'proposed_deadline_days' => $offer->proposed_deadline_days,
                     'status' => $offer->status,
+                    'created_at' => $offer->created_at?->toDateTimeString(),
                     'updated_at' => $offer->updated_at->diffForHumans(),
                 ];
             });

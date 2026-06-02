@@ -41,6 +41,9 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Apply to project
     Route::post('/projects/{id}/apply', [ProjectController::class, 'apply']);
+    Route::post('/projects/{id}/submit-result', [ProjectController::class, 'submitResult']);
+    Route::get('/projects/{id}/result-file', [ProjectController::class, 'downloadResult']);
+    Route::post('/projects/{id}/review', [ProjectController::class, 'review']);
 
     // My bids (freelancer)
     Route::get('/my-bids', [BidController::class, 'myBids']);

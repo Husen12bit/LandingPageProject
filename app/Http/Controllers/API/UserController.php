@@ -3,6 +3,8 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Client;
+use App\Models\Freelancer;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
@@ -32,6 +34,11 @@ class UserController extends Controller
             'bio' => 'sometimes|string',
             'skill' => 'sometimes|string|max:255',
             'company' => 'sometimes|string|max:255',
+            'alamat' => 'sometimes|string',
+            'bidang_usaha' => 'sometimes|string|max:255',
+            'portfolio' => 'sometimes|string',
+            'harga_per_hari' => 'sometimes|numeric|min:0|max:99999999.99',
+            'pengalaman_tahun' => 'sometimes|integer|min:0|max:80',
         ]);
 
         if ($validator->fails()) {
@@ -41,25 +48,55 @@ class UserController extends Controller
         $user->fill($request->only(['name', 'phone', 'avatar', 'bio', 'skill', 'company']));
         $user->save();
 
-        // Jika user adalah freelancer, sinkronkan ke tabel freelancers
         if ($user->role === 'freelancer') {
-            $freelancer = \App\Models\Freelancer::where('email', $user->email)->first();
-            if ($freelancer) {
-                $freelancer->update([
-                    'keahlian' => $request->skill ?? $freelancer->keahlian,
-                    'deskripsi' => $request->bio ?? $freelancer->deskripsi,
-                ]);
-            }
+            $freelancer = Freelancer::firstOrCreate(
+                ['email' => $user->email],
+                [
+                    'nama_lengkap' => $user->name,
+                    'no_telepon' => $user->phone ?? '-',
+                    'keahlian' => $request->input('skill', 'Umum'),
+                    'deskripsi' => $request->input('bio', 'Deskripsi belum tersedia'),
+                    'harga_per_hari' => 0,
+                    'pengalaman_tahun' => 0,
+                    'rating' => 0,
+                    'status' => 'aktif',
+                ]
+            );
+
+            $freelancer->fill([
+                'nama_lengkap' => $request->input('name', $freelancer->nama_lengkap),
+                'no_telepon' => $request->input('phone', $freelancer->no_telepon),
+                'keahlian' => $request->input('skill', $freelancer->keahlian),
+                'portfolio' => $request->input('portfolio', $freelancer->portfolio),
+                'deskripsi' => $request->input('bio', $freelancer->deskripsi),
+                'harga_per_hari' => $request->input('harga_per_hari', $freelancer->harga_per_hari),
+                'pengalaman_tahun' => $request->input('pengalaman_tahun', $freelancer->pengalaman_tahun),
+                'status' => $request->input('status', $freelancer->status),
+            ])->save();
         }
 
-        // Jika client, update tabel clients
         if ($user->role === 'client') {
-            $client = \App\Models\Client::where('email', $user->email)->first();
-            if ($client) {
-                $client->update([
-                    'bidang_usaha' => $request->company ?? $client->bidang_usaha,
-                ]);
-            }
+            $client = Client::firstOrCreate(
+                ['email' => $user->email],
+                [
+                    'nama_perusahaan' => $user->name,
+                    'nama_kontak' => $user->name,
+                    'no_telepon' => $user->phone ?? '-',
+                    'alamat' => $request->input('alamat', '-'),
+                    'bidang_usaha' => $request->input('company', '-'),
+                    'total_proyek' => 0,
+                    'status' => 'aktif',
+                ]
+            );
+
+            $client->fill([
+                'nama_perusahaan' => $request->input('name', $client->nama_perusahaan),
+                'nama_kontak' => $request->input('name', $client->nama_kontak),
+                'no_telepon' => $request->input('phone', $client->no_telepon),
+                'alamat' => $request->input('alamat', $client->alamat),
+                'bidang_usaha' => $request->input('company', $request->input('bidang_usaha', $client->bidang_usaha)),
+                'status' => $request->input('status', $client->status),
+            ])->save();
         }
 
         $user->load(['client', 'freelancer']);

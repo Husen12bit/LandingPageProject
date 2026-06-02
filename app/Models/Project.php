@@ -17,7 +17,16 @@ class Project extends Model
         'anggaran_min',
         'anggaran_max',
         'deadline',
-        'status'
+        'status',
+        'assigned_freelancer_id',
+        'agreed_budget',
+        'result_file',
+        'result_link',
+        'result_note',
+        'result_submitted_at',
+        'review_rating',
+        'review_comment',
+        'reviewed_at',
     ];
 
     public function client()
