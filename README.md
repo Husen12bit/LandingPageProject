@@ -1,58 +1,225 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# LandingPageProject
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+LandingPageProject adalah aplikasi berbasis Laravel yang dijalankan menggunakan Docker untuk mempermudah proses development dan deployment.
 
-## About Laravel
+---
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 🚀 Requirements
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Pastikan perangkat Anda sudah terinstall:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- Docker Desktop
+- Docker Compose
+- Git
+- Composer (Opsional)
 
-## Learning Laravel
-
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
-
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
-
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
-
-## Agentic Development
-
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+Cek instalasi Docker:
 
 ```bash
-composer require laravel/boost --dev
-
-php artisan boost:install
+docker --version
+docker compose version
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+---
 
-## Contributing
+## 📥 Clone Repository
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Clone repository dari GitHub:
 
-## Code of Conduct
+```bash
+git clone https://github.com/Husen12bit/LandingPageProject.git
+cd LandingPageProject
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+---
 
-## Security Vulnerabilities
+## ⚙️ Konfigurasi Environment
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+Salin file environment:
 
-## License
+```bash
+cp .env.example .env
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Sesuaikan konfigurasi database pada file `.env` jika diperlukan.
+
+Contoh:
+
+```env
+APP_NAME=LandingPageProject
+APP_ENV=local
+APP_DEBUG=true
+
+DB_CONNECTION=mysql
+DB_HOST=db
+DB_PORT=3306
+DB_DATABASE=landingpage
+DB_USERNAME=root
+DB_PASSWORD=root
+```
+
+---
+
+## 🐳 Menjalankan Docker
+
+Build dan jalankan container:
+
+```bash
+docker compose up -d --build
+```
+
+Cek container yang berjalan:
+
+```bash
+docker ps
+```
+
+---
+
+## 📦 Install Dependency Laravel
+
+Masuk ke container Laravel:
+
+```bash
+docker compose exec app bash
+```
+
+Install dependency:
+
+```bash
+composer install
+```
+
+---
+
+## 🔑 Generate Application Key
+
+Jalankan:
+
+```bash
+php artisan key:generate
+```
+
+---
+
+## 🗄️ Migrasi Database
+
+Jalankan migration:
+
+```bash
+php artisan migrate
+```
+
+Jika ingin mengisi data dummy:
+
+```bash
+php artisan db:seed
+```
+
+Atau:
+
+```bash
+php artisan migrate:fresh --seed
+```
+
+---
+
+## 🧹 Clear Cache
+
+Untuk memastikan konfigurasi terbaru digunakan:
+
+```bash
+php artisan optimize:clear
+```
+
+Atau:
+
+```bash
+php artisan config:clear
+php artisan route:clear
+php artisan cache:clear
+php artisan view:clear
+```
+
+---
+
+## ▶️ Menjalankan Project
+
+Pastikan semua container berjalan:
+
+```bash
+docker compose up -d
+```
+
+Akses aplikasi melalui browser:
+
+```text
+http://localhost:8000
+```
+
+---
+
+## ⏹️ Menghentikan Project
+
+Menghentikan container:
+
+```bash
+docker compose down
+```
+
+Menghapus container dan volume:
+
+```bash
+docker compose down -v
+```
+
+---
+
+## 🔄 Update Project
+
+Jika terdapat perubahan terbaru dari repository:
+
+```bash
+git pull origin main
+```
+
+Kemudian rebuild container:
+
+```bash
+docker compose down
+docker compose up -d --build
+```
+
+---
+
+## 📂 Struktur Project
+
+```text
+LandingPageProject
+├── app
+├── bootstrap
+├── config
+├── database
+├── public
+├── resources
+├── routes
+├── storage
+├── tests
+├── Dockerfile
+├── docker-compose.yml
+└── .env
+```
+
+---
+
+## 👥 Contributors
+
+- Muhammad Abdullah (Husen12bit)
+- Fito Rifqi Dwi Fatoni
+- Pius Purba
+
+---
+
+## 📄 License
+
+Project ini dikembangkan untuk kebutuhan pembelajaran, pengembangan web, dan kolaborasi tim menggunakan Laravel dan Docker.
