@@ -1,358 +1,153 @@
 @extends('layouts.admin')
 
-@section('title', 'Dashboard Admin')
+@section('title', 'Dashboard')
 
 @section('content')
-<style>
-    .stat-card {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        margin-bottom: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        transition: transform 0.3s;
-    }
-
-    .stat-card:hover {
-        transform: translateY(-5px);
-        box-shadow: 0 5px 20px rgba(0,0,0,0.1);
-    }
-
-    .stat-icon {
-        width: 60px;
-        height: 60px;
-        border-radius: 10px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        font-size: 28px;
-        margin-bottom: 15px;
-    }
-
-    .stat-number {
-        font-size: 28px;
-        font-weight: bold;
-        margin-bottom: 5px;
-    }
-
-    .stat-label {
-        color: #666;
-        font-size: 14px;
-    }
-
-    .chart-container {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-        margin-bottom: 20px;
-    }
-
-    .latest-table {
-        background: white;
-        border-radius: 10px;
-        padding: 20px;
-        box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-    }
-
-    .latest-table table {
-        margin-bottom: 0;
-    }
-</style>
-
-<div class="container-fluid">
-    <!-- Welcome Section -->
-    <div class="d-flex justify-content-between align-items-center mb-4">
-        <div>
-            <h2 class="mb-0">Dashboard Admin</h2>
-            <p class="text-muted">Selamat datang di panel administrasi SkillBantuin</p>
-        </div>
-        <div class="text-muted">
-            <i class="fas fa-calendar-alt"></i> {{ date('d F Y') }}
-        </div>
-    </div>
-
-    <!-- Stats Cards -->
-    <div class="row">
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(29, 191, 115, 0.1); color: #1dbf73;">
-                    <i class="fas fa-user"></i>
-                </div>
-                <div class="stat-number">{{ $totalFreelancer }}</div>
-                <div class="stat-label">Total Freelancer</div>
-                <small class="text-success"><i class="fas fa-check-circle"></i> {{ $freelancerAktif }} aktif</small>
-                <small class="text-warning ms-2"><i class="fas fa-clock"></i> {{ $freelancerVerifikasi }} verifikasi</small>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(13, 110, 253, 0.1); color: #0d6efd;">
-                    <i class="fas fa-building"></i>
-                </div>
-                <div class="stat-number">{{ $totalClient }}</div>
-                <div class="stat-label">Total Client</div>
-                <small class="text-success"><i class="fas fa-check-circle"></i> {{ $clientAktif }} aktif</small>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(255, 193, 7, 0.1); color: #ffc107;">
-                    <i class="fas fa-tag"></i>
-                </div>
-                <div class="stat-number">{{ $totalKategori }}</div>
-                <div class="stat-label">Total Kategori</div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(23, 162, 184, 0.1); color: #17a2b8;">
-                    <i class="fas fa-project-diagram"></i>
-                </div>
-                <div class="stat-number">{{ $totalProject }}</div>
-                <div class="stat-label">Total Proyek</div>
+<div class="space-y-6">
+    <!-- Stat Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-5">
+        <div class="glass-card p-5 rounded-2xl">
+            <div class="flex items-center justify-between">
                 <div>
-                    <small class="text-success"><i class="fas fa-play-circle"></i> {{ $projectOpen }} open</small>
-                    <small class="text-warning ms-2"><i class="fas fa-spinner"></i> {{ $projectProgress }} progress</small>
-                    <small class="text-info ms-2"><i class="fas fa-check-circle"></i> {{ $projectCompleted }} selesai</small>
+                    <p class="text-gray-400 text-sm">Total Freelancer</p>
+                    <p class="text-3xl font-bold text-white">{{ $totalFreelancer }}</p>
                 </div>
+                <i class="fas fa-user text-3xl text-emerald-400 opacity-80"></i>
+            </div>
+            <div class="mt-3 text-xs text-gray-400 flex gap-3">
+                <span class="text-emerald-400"><i class="fas fa-check-circle"></i> Aktif: {{ $freelancerAktif }}</span>
+                <span class="text-yellow-400"><i class="fas fa-clock"></i> Verif: {{ $freelancerVerifikasi }}</span>
             </div>
         </div>
-    </div>
-
-    <div class="row mt-3">
-        <div class="col-md-3">
-            <div class="stat-card">
-                <div class="stat-icon" style="background: rgba(220, 53, 69, 0.1); color: #dc3545;">
-                    <i class="fas fa-gavel"></i>
-                </div>
-                <div class="stat-number">{{ $totalBid }}</div>
-                <div class="stat-label">Total Penawaran</div>
-                <div>
-                    <small class="text-warning"><i class="fas fa-clock"></i> {{ $bidPending }} pending</small>
-                    <small class="text-success ms-2"><i class="fas fa-check"></i> {{ $bidAccepted }} accepted</small>
-                </div>
+        <div class="glass-card p-5 rounded-2xl">
+            <div class="flex items-center justify-between">
+                <div><p class="text-gray-400 text-sm">Total Client</p><p class="text-3xl font-bold">{{ $totalClient }}</p></div>
+                <i class="fas fa-building text-3xl text-teal-400"></i>
             </div>
+            <div class="mt-2 text-xs text-emerald-400"><i class="fas fa-check-circle"></i> Aktif: {{ $clientAktif }}</div>
+        </div>
+        <div class="glass-card p-5 rounded-2xl">
+            <div class="flex items-center justify-between">
+                <div><p class="text-gray-400 text-sm">Total Proyek</p><p class="text-3xl font-bold">{{ $totalProject }}</p></div>
+                <i class="fas fa-project-diagram text-3xl text-purple-400"></i>
+            </div>
+            <div class="mt-2 text-xs flex gap-2 flex-wrap">
+                <span class="text-emerald-400">Open: {{ $projectOpen }}</span>
+                <span class="text-yellow-400">Progress: {{ $projectProgress }}</span>
+                <span class="text-blue-400">Selesai: {{ $projectCompleted }}</span>
+            </div>
+        </div>
+        <div class="glass-card p-5 rounded-2xl">
+            <div class="flex items-center justify-between">
+                <div><p class="text-gray-400 text-sm">Total Penawaran</p><p class="text-3xl font-bold">{{ $totalBid }}</p></div>
+                <i class="fas fa-gavel text-3xl text-orange-400"></i>
+            </div>
+            <div class="mt-2 text-xs text-yellow-400">Pending: {{ $bidPending }}</div>
         </div>
     </div>
 
     <!-- Charts Row -->
-    <div class="row mt-4">
-        <div class="col-md-7">
-            <div class="chart-container">
-                <h5 class="mb-3"><i class="fas fa-chart-line"></i> Statistik 7 Hari Terakhir</h5>
-                <canvas id="weeklyChart" height="250"></canvas>
+    <div class="grid md:grid-cols-2 gap-6">
+        <div class="glass-card p-5 rounded-2xl">
+            <h3 class="font-semibold mb-3"><i class="fas fa-chart-line text-emerald-400 mr-2"></i> Statistik 7 Hari</h3>
+            <canvas id="weeklyChart" height="200"></canvas>
+        </div>
+        <div class="glass-card p-5 rounded-2xl">
+            <h3 class="font-semibold mb-3"><i class="fas fa-chart-pie text-teal-400 mr-2"></i> Proyek per Kategori</h3>
+            <canvas id="kategoriChart" height="200"></canvas>
+        </div>
+    </div>
+
+    <!-- Tabel Data Terbaru -->
+    <div class="grid lg:grid-cols-2 gap-6">
+        <div class="glass-card rounded-2xl p-5">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold"><i class="fas fa-user-plus text-emerald-400 mr-2"></i> Freelancer Terbaru</h3>
+                <a href="{{ route('freelancer.index') }}" class="text-xs text-emerald-400 hover:underline">Lihat semua</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="table-glass w-full">
+                    <thead><tr><th>Nama</th><th>Keahlian</th><th>Harga/Hari</th><th>Status</th></tr></thead>
+                    <tbody>
+                        @forelse($latestFreelancers as $f)
+                        <tr>
+                            <td>{{ $f->nama_lengkap }}</td>
+                            <td>{{ $f->keahlian }}</td>
+                            <td>Rp {{ number_format($f->harga_per_hari,0,',','.') }}</td>
+                            <td>@if($f->status=='aktif')<span class="badge-emerald">Aktif</span>@elseif($f->status=='verifikasi')<span class="badge-yellow">Verif</span>@else<span class="badge-gray">Nonaktif</span>@endif</td>
+                        </tr>
+                        @empty <tr><td colspan="4" class="text-center">Kosong</td></tr> @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
-        <div class="col-md-5">
-            <div class="chart-container">
-                <h5 class="mb-3"><i class="fas fa-chart-pie"></i> Proyek per Kategori</h5>
-                <canvas id="kategoriChart" height="250"></canvas>
+        <div class="glass-card rounded-2xl p-5">
+            <div class="flex justify-between items-center mb-4">
+                <h3 class="font-semibold"><i class="fas fa-project-diagram text-teal-400 mr-2"></i> Proyek Terbaru</h3>
+                <a href="{{ route('project.index') }}" class="text-xs text-emerald-400 hover:underline">Lihat semua</a>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="table-glass w-full">
+                    <thead><tr><th>Judul</th><th>Client</th><th>Status</th></tr></thead>
+                    <tbody>
+                        @forelse($latestProjects as $p)
+                        <tr>
+                            <td>{{ Str::limit($p->judul, 30) }}</td>
+                            <td>{{ $p->client->nama_perusahaan ?? '-' }}</td>
+                            <td>@if($p->status=='open')<span class="badge-emerald">Open</span>@elseif($p->status=='in_progress')<span class="badge-yellow">Progress</span>@elseif($p->status=='completed')<span class="badge-blue">Selesai</span>@else<span class="badge-gray">Batal</span>@endif</td>
+                        </tr>
+                        @empty <tr><td colspan="3">Kosong</td></tr> @endforelse
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 
-    <!-- Latest Data Row -->
-    <div class="row mt-4">
-        <div class="col-md-6">
-            <div class="latest-table">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0"><i class="fas fa-user-plus"></i> Freelancer Terbaru</h5>
-                    <a href="{{ route('freelancer.index') }}" class="btn btn-sm btn-success">Lihat Semua</a>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Nama</th>
-                                <th>Keahlian</th>
-                                <th>Harga/Hari</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($latestFreelancers as $freelancer)
-                            <tr>
-                                <td>{{ $freelancer->nama_lengkap }}</td>
-                                <td>{{ $freelancer->keahlian }}</td>
-                                <td>Rp {{ number_format($freelancer->harga_per_hari, 0, ',', '.') }}</td>
-                                <td>
-                                    @if($freelancer->status == 'aktif')
-                                        <span class="badge bg-success">Aktif</span>
-                                    @elseif($freelancer->status == 'verifikasi')
-                                        <span class="badge bg-warning">Verifikasi</span>
-                                    @else
-                                        <span class="badge bg-danger">Nonaktif</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="text-center">Belum ada data freelancer</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-6">
-            <div class="latest-table">
-                <div class="d-flex justify-content-between align-items-center mb-3">
-                    <h5 class="mb-0"><i class="fas fa-project-diagram"></i> Proyek Terbaru</h5>
-                    <a href="{{ route('project.index') }}" class="btn btn-sm btn-primary">Lihat Semua</a>
-                </div>
-                <div class="table-responsive">
-                    <table class="table table-hover">
-                        <thead>
-                            <tr>
-                                <th>Judul</th>
-                                <th>Client</th>
-                                <th>Kategori</th>
-                                <th>Status</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @forelse($latestProjects as $project)
-                            <tr>
-                                <td>{{ Str::limit($project->judul, 25) }}</td>
-                                <td>{{ $project->client->nama_perusahaan ?? '-' }}</td>
-                                <td>{{ $project->kategori->nama_kategori ?? '-' }}</td>
-                                <td>
-                                    @if($project->status == 'open')
-                                        <span class="badge bg-success">Open</span>
-                                    @elseif($project->status == 'in_progress')
-                                        <span class="badge bg-warning">In Progress</span>
-                                    @elseif($project->status == 'completed')
-                                        <span class="badge bg-info">Completed</span>
-                                    @else
-                                        <span class="badge bg-danger">Cancelled</span>
-                                    @endif
-                                </td>
-                            </tr>
-                            @empty
-                            <tr>
-                                <td colspan="4" class="text-center">Belum ada data proyek</td>
-                            </tr>
-                            @endforelse
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Quick Access Menu -->
-    <div class="row mt-4">
-        <div class="col-12">
-            <div class="chart-container">
-                <h5 class="mb-3"><i class="fas fa-rocket"></i> Menu Cepat</h5>
-                <div class="row">
-                    <div class="col-md-2 col-6 mb-2">
-                        <a href="{{ route('freelancer.index') }}" class="btn btn-outline-success w-100 py-3">
-                            <i class="fas fa-user fa-2x d-block mb-2"></i>
-                            Freelancer
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6 mb-2">
-                        <a href="{{ route('client.index') }}" class="btn btn-outline-primary w-100 py-3">
-                            <i class="fas fa-building fa-2x d-block mb-2"></i>
-                            Client
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6 mb-2">
-                        <a href="{{ route('kategori.index') }}" class="btn btn-outline-warning w-100 py-3">
-                            <i class="fas fa-tag fa-2x d-block mb-2"></i>
-                            Kategori
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6 mb-2">
-                        <a href="{{ route('project.index') }}" class="btn btn-outline-info w-100 py-3">
-                            <i class="fas fa-project-diagram fa-2x d-block mb-2"></i>
-                            Proyek
-                        </a>
-                    </div>
-                    <div class="col-md-2 col-6 mb-2">
-                        <a href="{{ route('bid.index') }}" class="btn btn-outline-danger w-100 py-3">
-                            <i class="fas fa-gavel fa-2x d-block mb-2"></i>
-                            Penawaran
-                        </a>
-                    </div>
-                </div>
-            </div>
+    <!-- Quick Access -->
+    <div class="glass-card rounded-2xl p-5">
+        <h3 class="font-semibold mb-3"><i class="fas fa-rocket text-purple-400 mr-2"></i> Menu Cepat</h3>
+        <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+            <a href="{{ route('freelancer.index') }}" class="text-center p-3 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 transition"><i class="fas fa-user text-emerald-400 block text-xl mb-1"></i><span class="text-xs">Freelancer</span></a>
+            <a href="{{ route('client.index') }}" class="text-center p-3 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 transition"><i class="fas fa-building text-teal-400 block text-xl mb-1"></i><span class="text-xs">Client</span></a>
+            <a href="{{ route('kategori.index') }}" class="text-center p-3 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 transition"><i class="fas fa-tag text-purple-400 block text-xl mb-1"></i><span class="text-xs">Kategori</span></a>
+            <a href="{{ route('project.index') }}" class="text-center p-3 rounded-xl bg-blue-500/10 hover:bg-blue-500/20 transition"><i class="fas fa-project-diagram text-blue-400 block text-xl mb-1"></i><span class="text-xs">Proyek</span></a>
+            <a href="{{ route('bid.index') }}" class="text-center p-3 rounded-xl bg-orange-500/10 hover:bg-orange-500/20 transition"><i class="fas fa-gavel text-orange-400 block text-xl mb-1"></i><span class="text-xs">Penawaran</span></a>
         </div>
     </div>
 </div>
-@endsection
+
+<style>
+    .badge-emerald { background: #10B98120; color: #10B981; padding: 2px 8px; border-radius: 20px; font-size: 12px; }
+    .badge-yellow { background: #EAB30820; color: #EAB308; padding: 2px 8px; border-radius: 20px; font-size: 12px; }
+    .badge-blue { background: #3B82F620; color: #3B82F6; padding: 2px 8px; border-radius: 20px; font-size: 12px; }
+    .badge-gray { background: #64748B30; color: #94A3B8; padding: 2px 8px; border-radius: 20px; font-size: 12px; }
+</style>
 
 @push('scripts')
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
-    // Chart 7 Hari Terakhir
-    const ctx1 = document.getElementById('weeklyChart').getContext('2d');
-    new Chart(ctx1, {
+    // Data dari controller
+    const labels = @json($labels);
+    const freelancerData = @json($freelancerData);
+    const projectData = @json($projectData);
+    const kategoriLabels = @json($kategoriLabels);
+    const kategoriData = @json($kategoriData);
+
+    new Chart(document.getElementById('weeklyChart'), {
         type: 'line',
         data: {
-            labels: {!! json_encode($labels) !!},
+            labels: labels,
             datasets: [
-                {
-                    label: 'Freelancer Baru',
-                    data: {!! json_encode($freelancerData) !!},
-                    borderColor: '#1dbf73',
-                    backgroundColor: 'rgba(29, 191, 115, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                },
-                {
-                    label: 'Proyek Baru',
-                    data: {!! json_encode($projectData) !!},
-                    borderColor: '#0d6efd',
-                    backgroundColor: 'rgba(13, 110, 253, 0.1)',
-                    tension: 0.4,
-                    fill: true
-                }
+                { label: 'Freelancer Baru', data: freelancerData, borderColor: '#10B981', backgroundColor: 'rgba(16,185,129,0.1)', tension: 0.3, fill: true },
+                { label: 'Proyek Baru', data: projectData, borderColor: '#14B8A6', backgroundColor: 'rgba(20,184,166,0.05)', tension: 0.3, fill: true }
             ]
         },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'top'
-                }
-            }
-        }
+        options: { responsive: true, maintainAspectRatio: true, color: '#94A3B8' }
     });
-
-    // Chart Kategori Proyek
-    const ctx2 = document.getElementById('kategoriChart').getContext('2d');
-    new Chart(ctx2, {
+    new Chart(document.getElementById('kategoriChart'), {
         type: 'pie',
-        data: {
-            labels: {!! json_encode($kategoriLabels) !!},
-            datasets: [{
-                data: {!! json_encode($kategoriData) !!},
-                backgroundColor: [
-                    '#1dbf73',
-                    '#0d6efd',
-                    '#ffc107',
-                    '#dc3545',
-                    '#17a2b8',
-                    '#6f42c1',
-                    '#fd7e14',
-                    '#20c997'
-                ]
-            }]
-        },
-        options: {
-            responsive: true,
-            maintainAspectRatio: true,
-            plugins: {
-                legend: {
-                    position: 'right'
-                }
-            }
-        }
+        data: { labels: kategoriLabels, datasets: [{ data: kategoriData, backgroundColor: ['#10B981','#14B8A6','#7C3AED','#F59E0B','#EF4444','#06B6D4'] }] },
+        options: { responsive: true, plugins: { legend: { position: 'right', labels: { color: '#CBD5E1' } } } }
     });
 </script>
 @endpush
+@endsection
