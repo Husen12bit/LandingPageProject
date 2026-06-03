@@ -1,227 +1,242 @@
+{{-- resources/views/layouts/admin.blade.php --}}
 <!DOCTYPE html>
-<html lang="id">
+<html lang="id" class="scroll-smooth">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'Admin Panel - SkillBantuin')</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:opsz,wght@14..32,300..800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome 6 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css">
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
     <style>
+        /* Premium Dark Glassmorphism Admin */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
-
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #f0f2f5;
+            font-family: 'Inter Variable', 'Plus Jakarta Sans', sans-serif;
+            background-color: #020617;
+            background-image: radial-gradient(circle at 20% 30%, rgba(16, 185, 129, 0.15) 0%, transparent 50%),
+                              radial-gradient(circle at 80% 70%, rgba(20, 184, 166, 0.1) 0%, transparent 55%);
+            background-attachment: fixed;
+            color: #F8FAFC;
         }
-
-        /* Sidebar */
-        .sidebar {
-            background: linear-gradient(135deg, #1dbf73 0%, #0e8f56 100%);
-            min-height: 100vh;
-            position: fixed;
-            left: 0;
-            top: 0;
-            width: 260px;
-            z-index: 100;
-            transition: all 0.3s;
+        /* Glassmorphism untuk sidebar & card */
+        .glass-sidebar {
+            background: rgba(11, 17, 32, 0.7);
+            backdrop-filter: blur(16px);
+            border-right: 1px solid rgba(16, 185, 129, 0.2);
         }
-
-        .sidebar-brand {
-            padding: 20px;
-            text-align: center;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-            margin-bottom: 20px;
+        .glass-card {
+            background: rgba(15, 25, 45, 0.55);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(20, 184, 166, 0.25);
+            transition: all 0.3s ease;
         }
-
-        .sidebar-brand h4 {
-            color: white;
-            margin-bottom: 5px;
+        .glass-card:hover {
+            border-color: #10B981;
+            box-shadow: 0 10px 25px -10px rgba(16, 185, 129, 0.3);
         }
-
-        .sidebar-brand small {
-            color: rgba(255,255,255,0.7);
-            font-size: 12px;
+        .glass-navbar {
+            background: rgba(11, 17, 32, 0.6);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(16, 185, 129, 0.2);
         }
-
-        .sidebar .nav-link {
-            color: rgba(255,255,255,0.9);
-            padding: 12px 20px;
-            margin: 5px 10px;
-            border-radius: 8px;
-            transition: all 0.3s;
+        /* Scrollbar */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-track { background: #0B1120; }
+        ::-webkit-scrollbar-thumb { background: #10B981; border-radius: 10px; }
+        /* Table styles */
+        .table-glass {
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 0;
         }
-
-        .sidebar .nav-link:hover {
-            background-color: rgba(255,255,255,0.2);
-            color: white;
-        }
-
-        .sidebar .nav-link.active {
-            background-color: white;
-            color: #1dbf73;
-        }
-
-        .sidebar .nav-link i {
-            margin-right: 10px;
-            width: 20px;
-            text-align: center;
-        }
-
-        /* Main Content */
-        .main-content {
-            margin-left: 260px;
-            padding: 20px;
-            min-height: 100vh;
-        }
-
-        /* Top Navbar */
-        .top-navbar {
-            background: white;
-            border-radius: 10px;
-            padding: 15px 20px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .page-title {
-            font-size: 20px;
+        .table-glass th {
+            background: rgba(20, 184, 166, 0.1);
+            color: #14B8A6;
             font-weight: 600;
-            color: #333;
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(16, 185, 129, 0.3);
         }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 15px;
+        .table-glass td {
+            padding: 12px 16px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            color: #E2E8F0;
         }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: #1dbf73;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
+        .table-glass tr:hover td {
+            background: rgba(16, 185, 129, 0.05);
         }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .sidebar {
-                margin-left: -260px;
-            }
-            .sidebar.active {
-                margin-left: 0;
-            }
-            .main-content {
-                margin-left: 0;
-            }
-            .menu-toggle {
-                display: block;
-            }
-        }
-
-        .menu-toggle {
-            display: none;
-            background: #1dbf73;
-            border: none;
-            color: white;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        /* Card Styles */
-        .card {
-            border: none;
+        /* Form controls */
+        .input-glass {
+            background: rgba(11, 17, 32, 0.6);
+            border: 1px solid rgba(20, 184, 166, 0.4);
             border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
-            margin-bottom: 20px;
+            padding: 10px 14px;
+            color: white;
+            width: 100%;
+            transition: all 0.2s;
         }
-
-        .card-header {
-            background-color: white;
-            border-bottom: 1px solid #eee;
-            padding: 15px 20px;
-            border-radius: 10px 10px 0 0;
-            font-weight: 600;
+        .input-glass:focus {
+            outline: none;
+            border-color: #10B981;
+            box-shadow: 0 0 0 2px rgba(16, 185, 129, 0.2);
+        }
+        .btn-emerald {
+            background: linear-gradient(95deg, #10B981, #059669);
+            transition: all 0.2s;
+        }
+        .btn-emerald:hover {
+            box-shadow: 0 0 12px rgba(16, 185, 129, 0.5);
+            transform: scale(1.02);
+        }
+        /* Sidebar active link */
+        .sidebar-link {
+            transition: all 0.2s;
+            border-left: 3px solid transparent;
+        }
+        .sidebar-link.active {
+            background: rgba(16, 185, 129, 0.15);
+            border-left-color: #10B981;
+            color: #10B981;
+        }
+        .sidebar-link:hover:not(.active) {
+            background: rgba(20, 184, 166, 0.1);
+            color: #14B8A6;
         }
     </style>
     @stack('styles')
 </head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="sidebar-brand">
-            <h4><i class="fas fa-handshake"></i> SkillBantuin</h4>
-            <small>Admin Panel</small>
-        </div>
-        <nav class="nav flex-column">
-            <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}" href="{{ route('admin.dashboard') }}">
-                <i class="fas fa-tachometer-alt"></i> Dashboard
-            </a>
-            <a class="nav-link {{ request()->routeIs('freelancer*') ? 'active' : '' }}" href="{{ route('freelancer.index') }}">
-                <i class="fas fa-user"></i> Freelancer
-            </a>
-            <a class="nav-link {{ request()->routeIs('client*') ? 'active' : '' }}" href="{{ route('client.index') }}">
-                <i class="fas fa-building"></i> Client
-            </a>
-            <a class="nav-link {{ request()->routeIs('kategori*') ? 'active' : '' }}" href="{{ route('kategori.index') }}">
-                <i class="fas fa-tag"></i> Kategori
-            </a>
-            <a class="nav-link {{ request()->routeIs('project*') ? 'active' : '' }}" href="{{ route('project.index') }}">
-                <i class="fas fa-project-diagram"></i> Proyek
-            </a>
-            <a class="nav-link {{ request()->routeIs('bid*') ? 'active' : '' }}" href="{{ route('bid.index') }}">
-                <i class="fas fa-gavel"></i> Penawaran
-            </a>
-            <hr style="border-color: rgba(255,255,255,0.1); margin: 20px 10px;">
-            <a class="nav-link" href="{{ route('home') }}" target="_blank">
-                <i class="fas fa-globe"></i> Landing Page
-            </a>
-        </nav>
-    </div>
+<body class="antialiased">
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="top-navbar">
-            <div>
-                <button class="menu-toggle" id="menuToggle">
-                    <i class="fas fa-bars"></i>
-                </button>
-                <span class="page-title">@yield('title', 'Dashboard')</span>
-            </div>
-            <div class="user-info">
-                <span class="text-muted">Admin</span>
-                <div class="user-avatar">
-                    <i class="fas fa-user"></i>
+    <div class="flex h-screen overflow-hidden">
+        <!-- SIDEBAR GLASS -->
+        <aside class="glass-sidebar w-72 flex-shrink-0 overflow-y-auto z-20 hidden md:block">
+            <div class="p-6">
+                <div class="flex items-center gap-2 mb-8">
+                    <i class="fas fa-handshake text-emerald-400 text-2xl"></i>
+                    <span class="text-xl font-bold bg-gradient-to-r from-emerald-400 to-teal-400 bg-clip-text text-transparent">SkillBantuin</span>
+                    <span class="text-xs text-gray-400 ml-auto">Admin</span>
                 </div>
+                <nav class="space-y-1">
+                    <a href="{{ route('admin.dashboard') }}" class="sidebar-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg text-gray-200">
+                        <i class="fas fa-tachometer-alt w-5"></i> Dashboard
+                    </a>
+                    <a href="{{ route('freelancer.index') }}" class="sidebar-link {{ request()->routeIs('freelancer*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-user w-5"></i> Freelancer
+                    </a>
+                    <a href="{{ route('client.index') }}" class="sidebar-link {{ request()->routeIs('client*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-building w-5"></i> Client
+                    </a>
+                    <a href="{{ route('kategori.index') }}" class="sidebar-link {{ request()->routeIs('kategori*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-tag w-5"></i> Kategori
+                    </a>
+                    <a href="{{ route('project.index') }}" class="sidebar-link {{ request()->routeIs('project*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-project-diagram w-5"></i> Proyek
+                    </a>
+                    <a href="{{ route('bid.index') }}" class="sidebar-link {{ request()->routeIs('bid*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-gavel w-5"></i> Penawaran
+                    </a>
+                    <a href="{{ route('user.index') }}" class="sidebar-link {{ request()->routeIs('user*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-users w-5"></i> User
+                    </a>
+                    <a href="{{ route('transaction.index') }}" class="sidebar-link {{ request()->routeIs('transaction*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-credit-card w-5"></i> Transaksi
+                    </a>
+                    <a href="{{ route('offer.index') }}" class="sidebar-link {{ request()->routeIs('offer*') ? 'active' : '' }} flex items-center gap-3 px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-handshake w-5"></i> Offer
+                    </a>
+                    <hr class="my-4 border-emerald-500/20">
+                    <a href="{{ route('home') }}" target="_blank" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">
+                        <i class="fas fa-globe w-5"></i> Landing Page
+                    </a>
+                </nav>
             </div>
-        </div>
+        </aside>
 
-        @yield('content')
+        <!-- MAIN CONTENT -->
+        <div class="flex-1 flex flex-col overflow-hidden">
+            <!-- Top Navbar Glass -->
+            <header class="glass-navbar px-6 py-3 flex justify-between items-center sticky top-0 z-10">
+                <div class="flex items-center gap-4">
+                    <button id="mobileMenuBtn" class="md:hidden text-white text-xl">
+                        <i class="fas fa-bars"></i>
+                    </button>
+                    <h1 class="text-lg font-semibold text-white/90">@yield('title', 'Dashboard')</h1>
+                </div>
+                <div class="flex items-center gap-4">
+                    <span class="text-sm text-gray-300 hidden md:inline">
+                        <i class="far fa-calendar-alt mr-1"></i> {{ date('d F Y') }}
+                    </span>
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
+                        <i class="fas fa-user text-sm text-white"></i>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable content -->
+            <main class="flex-1 overflow-y-auto p-6">
+                @yield('content')
+            </main>
+        </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // Toggle sidebar untuk mobile
-        const menuToggle = document.getElementById('menuToggle');
-        const sidebar = document.querySelector('.sidebar');
+    <!-- Mobile Sidebar Overlay -->
+    <div id="mobileSidebarOverlay" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 hidden transition-all"></div>
+    <div id="mobileSidebar" class="fixed top-0 left-0 h-full w-72 glass-sidebar z-50 transform -translate-x-full transition-transform duration-300">
+        <div class="p-6">
+            <div class="flex justify-between items-center mb-8">
+                <div class="flex items-center gap-2">
+                    <i class="fas fa-handshake text-emerald-400 text-2xl"></i>
+                    <span class="text-xl font-bold text-white">SkillBantuin</span>
+                </div>
+                <button id="closeMobileMenu" class="text-gray-300 text-xl"><i class="fas fa-times"></i></button>
+            </div>
+            <nav class="space-y-1">
+                <a href="{{ route('admin.dashboard') }}" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">Dashboard</a>
+                <a href="{{ route('freelancer.index') }}" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">Freelancer</a>
+                <a href="{{ route('client.index') }}" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">Client</a>
+                <a href="{{ route('kategori.index') }}" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">Kategori</a>
+                <a href="{{ route('project.index') }}" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">Proyek</a>
+                <a href="{{ route('bid.index') }}" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">Penawaran</a>
+                <a href="{{ route('user.index') }}" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">User</a>
+                <a href="{{ route('transaction.index') }}" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">Transaksi</a>
+                <a href="{{ route('offer.index') }}" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">Offer</a>
+                <hr class="my-4">
+                <a href="{{ route('home') }}" class="sidebar-link flex items-center gap-3 px-4 py-2.5 rounded-lg">Landing Page</a>
+            </nav>
+        </div>
+    </div>
 
-        if (menuToggle) {
-            menuToggle.addEventListener('click', function() {
-                sidebar.classList.toggle('active');
-            });
+    <script>
+        // Mobile sidebar toggle
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileSidebar = document.getElementById('mobileSidebar');
+        const overlay = document.getElementById('mobileSidebarOverlay');
+        const closeMobile = document.getElementById('closeMobileMenu');
+
+        function openMobileSidebar() {
+            mobileSidebar.classList.remove('-translate-x-full');
+            overlay.classList.remove('hidden');
         }
+        function closeMobileSidebar() {
+            mobileSidebar.classList.add('-translate-x-full');
+            overlay.classList.add('hidden');
+        }
+        if(mobileMenuBtn) mobileMenuBtn.addEventListener('click', openMobileSidebar);
+        if(closeMobile) closeMobile.addEventListener('click', closeMobileSidebar);
+        overlay.addEventListener('click', closeMobileSidebar);
     </script>
     @stack('scripts')
 </body>
