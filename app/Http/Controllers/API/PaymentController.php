@@ -70,6 +70,10 @@ class PaymentController extends Controller
         if (!$transaction) {
             return response()->json(['status' => 'not_found'], 404);
         }
+        if ($transaction->status === 'pending') {
+            $this->midtrans->syncTransactionStatus($transaction);
+            $transaction->refresh();
+        }
         return response()->json(['status' => $transaction->status]);
     }
 }

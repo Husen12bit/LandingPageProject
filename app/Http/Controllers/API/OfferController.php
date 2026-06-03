@@ -116,7 +116,8 @@ class OfferController extends Controller
         // Update project status and assign freelancer
         $offer->project->update([
             'status' => 'in_progress',
-            'assigned_freelancer_id' => $offer->freelancer_id
+            'assigned_freelancer_id' => $offer->freelancer_id,
+            'agreed_budget' => $offer->offered_budget,
         ]);
 
         return response()->json([

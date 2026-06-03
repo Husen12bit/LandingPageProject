@@ -4,6 +4,7 @@ namespace App\Services;
 
 use Midtrans\Config;
 use Midtrans\Snap;
+use Midtrans\Transaction as MidtransTransaction;
 use App\Models\Transaction;
 use App\Models\Project;
 use Illuminate\Support\Facades\Log;
@@ -22,7 +23,9 @@ class MidtransService
     public function createPayment(Project $project, string $clientEmail, string $clientName)
     {
         $orderId = 'ORDER-' . $project->id . '-' . time();
-        $amount  = (int) ($project->agreed_budget ?? $project->anggaran_min);
+        $serviceAmount = $this->resolveServiceAmount($project);
+        $platformFee = (int) ceil($serviceAmount * 0.05);
+        $amount = $serviceAmount + $platformFee;
 
         $params = [
             'transaction_details' => [
@@ -45,6 +48,7 @@ class MidtransService
 
         try {
             $snapResponse = Snap::createTransaction($params);
+            $snapResponse->order_id = $orderId;
 
             Transaction::create([
                 'order_id'          => $orderId,
@@ -58,6 +62,32 @@ class MidtransService
         } catch (Exception $e) {
             Log::error('Midtrans Error: ' . $e->getMessage());
             throw $e;
+        }
+    }
+
+    public function syncTransactionStatus(Transaction $transaction): string
+    {
+        try {
+            $statusResponse = MidtransTransaction::status($transaction->order_id);
+            $payload = json_decode(json_encode($statusResponse), true) ?: [];
+            $status = $this->mapStatus($payload['transaction_status'] ?? $transaction->status);
+
+            $transaction->update([
+                'status' => $status,
+                'payment_type' => $payload['payment_type'] ?? $transaction->payment_type,
+                'midtrans_payload' => json_encode($payload),
+            ]);
+
+            if ($status === 'settlement') {
+                Project::where('id', $transaction->project_id)->update([
+                    'status' => 'in_progress',
+                ]);
+            }
+
+            return $status;
+        } catch (Exception $e) {
+            Log::error('Midtrans Status Error: ' . $e->getMessage());
+            return $transaction->status;
         }
     }
 
@@ -97,5 +127,24 @@ class MidtransService
             'deny', 'expire', 'cancel' => 'failed',
             default                 => 'pending',
         };
+    }
+
+    private function resolveServiceAmount(Project $project): int
+    {
+        if ($project->agreed_budget) {
+            return (int) $project->agreed_budget;
+        }
+
+        $acceptedOffer = $project->offers()
+            ->where('status', 'accepted')
+            ->latest()
+            ->first();
+
+        if ($acceptedOffer) {
+            $project->update(['agreed_budget' => $acceptedOffer->offered_budget]);
+            return (int) $acceptedOffer->offered_budget;
+        }
+
+        return (int) ($project->anggaran_min ?? $project->anggaran_max ?? 0);
     }
 }
