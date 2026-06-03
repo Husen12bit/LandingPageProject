@@ -57,6 +57,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/projects/{projectId}/offers', [OfferController::class, 'index']);
     Route::put('/offers/{id}/accept', [OfferController::class, 'accept']);
     Route::put('/offers/{id}/reject', [OfferController::class, 'reject']);
+    Route::put('/offers/{id}/counter', [OfferController::class, 'counter']);
+    Route::put('/offers/{id}/accept-counter', [OfferController::class, 'acceptCounter']);
     Route::get('/my-offers', [OfferController::class, 'myOffers']);
 
     // Payment

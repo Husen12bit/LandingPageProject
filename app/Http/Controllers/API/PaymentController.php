@@ -74,6 +74,13 @@ class PaymentController extends Controller
             $this->midtrans->syncTransactionStatus($transaction);
             $transaction->refresh();
         }
-        return response()->json(['status' => $transaction->status]);
+        return response()->json([
+            'status' => $transaction->status,
+            'payment_status' => $transaction->status,
+            'project_status' => optional($transaction->project)->status,
+            'message' => $transaction->status === 'settlement'
+                ? 'Pembayaran berhasil. Freelancer bisa mulai mengerjakan tugas.'
+                : 'Pembayaran masih menunggu penyelesaian.',
+        ]);
     }
 }
