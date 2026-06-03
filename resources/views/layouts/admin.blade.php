@@ -179,8 +179,20 @@
                     <span class="text-sm text-gray-300 hidden md:inline">
                         <i class="far fa-calendar-alt mr-1"></i> {{ date('d F Y') }}
                     </span>
-                    <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center">
-                        <i class="fas fa-user text-sm text-white"></i>
+                    <div class="relative group">
+                        <div class="w-8 h-8 rounded-full bg-gradient-to-br from-emerald-500 to-teal-500 flex items-center justify-center cursor-pointer hover:ring-2 hover:ring-emerald-400/50 transition">
+                            <i class="fas fa-user text-sm text-white"></i>
+                        </div>
+                        <div class="absolute right-0 top-full pt-1 w-40 opacity-0 invisible pointer-events-none group-hover:opacity-100 group-hover:visible group-hover:pointer-events-auto transition-all duration-200 z-50">
+                            <div class="bg-gray-800/90 backdrop-blur-lg rounded-lg shadow-lg overflow-hidden border border-white/10">
+                                <form action="{{ route('logout') }}" method="POST">
+                                    @csrf
+                                    <button type="submit" class="w-full text-left px-4 py-2.5 text-sm text-gray-200 hover:bg-emerald-500/20 transition flex items-center gap-2">
+                                        <i class="fas fa-sign-out-alt text-emerald-400"></i> Logout
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </header>

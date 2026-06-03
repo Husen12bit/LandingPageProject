@@ -8,6 +8,11 @@ Route::get('/fitur', [LandingController::class, 'fitur'])->name('fitur');
 Route::get('/about', [LandingController::class, 'about'])->name('about');
 Route::get('/contact', [LandingController::class, 'contact'])->name('contact');
 
+//auth routes
+Route::get('/login', [App\Http\Controllers\AuthController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [App\Http\Controllers\AuthController::class, 'login']);
+Route::post('/logout', [App\Http\Controllers\AuthController::class, 'logout'])->name('logout');
+
 use App\Http\Controllers\FreelancerController;
 use App\Http\Controllers\ClientController;
 use App\Http\Controllers\KategoriController;
@@ -19,7 +24,7 @@ use App\Http\Controllers\OfferController;
 use App\Http\Controllers\TransactionController;
 
 // Route untuk CRUD Freelancer
-Route::prefix('admin')->group(function () {
+Route::prefix('admin')->middleware('admin')->group(function () {
     // Dashboard (utama)
     Route::get('/dashboard', [AdminDashboardController::class, 'index'])->name('admin.dashboard');
     Route::get('/', [AdminDashboardController::class, 'index']); // redirect root admin ke dashboard
