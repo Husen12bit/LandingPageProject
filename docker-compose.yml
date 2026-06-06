@@ -3,10 +3,11 @@ services:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: skillbantuin-app
+    container_name: skillbantuin-app-landing
+    platform: linux/arm64
     working_dir: /var/www/html
     volumes:
-      - .:/var/www/html             # ← root project langsung
+      - .:/var/www/html
     depends_on:
       db:
         condition: service_healthy
@@ -17,11 +18,12 @@ services:
 
   nginx:
     image: nginx:1.27-alpine
-    container_name: skillbantuin-nginx
+    container_name: skillbantuin-nginx-landing
+    platform: linux/arm64
     ports:
       - "8000:80"
     volumes:
-      - .:/var/www/html             # ← root project langsung
+      - .:/var/www/html
       - ./docker/nginx/default.conf:/etc/nginx/conf.d/default.conf
     depends_on:
       - app
@@ -30,8 +32,10 @@ services:
 
   db:
     image: gvenzl/oracle-xe:21-slim
+    container_name: skillbantuin-db-landing
+    platform: linux/amd64 # ← FORCE pake Intel/AMD (biar diemulasi Rosetta)
     ports:
-      - "1522:1521"
+      - "1521:1521"
     environment:
       ORACLE_PASSWORD: oracle
       APP_USER: skillbantuin
@@ -39,7 +43,11 @@ services:
     volumes:
       - oracle_data:/opt/oracle/oradata
     healthcheck:
-      test: ["CMD", "healthcheck.sh"]
+      test:
+        [
+          "CMD-SHELL",
+          "echo 'SELECT 1 FROM dual' | sqlplus -s system/oracle > /dev/null 2>&1 || exit 1",
+        ]
       interval: 30s
       timeout: 10s
       retries: 15
